@@ -5,8 +5,7 @@
 /******************************************************/
 
 #include <SPI_Channel.h>
-#include <SPI_Request.h>
-#include <SPI_Response.h>
+#include <SPI_Message.h>
 
 SPI_Channel spi;
 
@@ -28,9 +27,34 @@ void setup (void) {
 void loop (void)
 {
   if (connected && spi.available()) {
-    SPI_Request request = spi.receive();
-    SPI_Response response;
-    response.content("Ok");
-    spi.send(response);
+    SPI_Message spi_response;
+    Serial.println("Incoming Request");
+    SPI_Message spi_request = spi.receive();
+    if (spi_request.error().length() > 0) {
+      Serial.print("Error receiving message: ");
+      Serial.println(spi_request.error());
+      delay(100);
+    }
+    if (spi_request.length() > 0) {
+      String request = spi_request.content();
+      Serial.print("Request: ");
+      Serial.println(request);
+
+      //if (request.startsWith("ver")) {
+      //  spi_response.content("0.01");
+      //}
+      //else {
+      //  Serial.println("Invalid request");
+      //  spi_response.content("Nope");
+      //}
+      //delay(100);
+      //Serial.println("Sending response");
+      //if (spi.send(spi_response)) {
+      //  Serial.println("Response delivered");
+      //}
+      //else {
+      //  Serial.println(spi.error());
+      //}
+    }
   }
 }
